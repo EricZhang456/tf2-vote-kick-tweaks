@@ -15,7 +15,7 @@ public Plugin myinfo = {
 
 public void OnPluginStart() {
     g_cvVoteKickTargetAdmin = CreateConVar("sm_vote_kick_target_admin", "1", "Do vote kicks follow SourceMod Admin target rules?");
-    g_cvVoteKickSelf = CreateConVar("sm_vote_kick_target_admin", "0", "Can vote kicks target clients themselves?");
+    g_cvVoteKickSelf = CreateConVar("sm_vote_kick_self", "0", "Can clients start vote kicks targeting themselves?");
 
     g_cvServerVoteKickAllowed = FindConVar("sv_vote_issue_kick_allowed");
 
