@@ -28,6 +28,7 @@ public void OnPluginStart() {
     g_cvVoteKickCheatingAllowed = CreateConVar("sm_vote_kick_cheating_allowed", "1", "Allow vote kicks with cheating as the reason");
 
     g_cvServerVoteKickAllowed = FindConVar("sv_vote_issue_kick_allowed");
+    g_cvServerVoteKickAllowed.AddChangeHook(OnServerVoteKickAllowChange);
 
     AutoExecConfig(true);
 }
@@ -53,6 +54,20 @@ public void OnAllPluginsLoaded() {
         && LibraryExists("nativevotes") && NativeVotes_IsVoteTypeSupported(NativeVotesType_Kick)) {
         NativeVotes_RegisterVoteCommand(NativeVotesOverride_Kick, OnKickVote);
         g_bVoteKickRegistered = true;
+    }
+}
+
+public void OnServerVoteKickAllowChange(ConVar convar, const char[] oldValue, const char[] newValue) {
+    if (!LibraryExists("nativevotes") || !NativeVotes_IsVoteTypeSupported(NativeVotesType_Kick)) {
+        return;
+    }
+
+    if (convar.BoolValue && !g_bVoteKickRegistered) {
+        NativeVotes_RegisterVoteCommand(NativeVotesOverride_Kick, OnKickVote);
+        g_bVoteKickRegistered = true;
+    } else if (!convar.BoolValue && g_bVoteKickRegistered) {
+        NativeVotes_UnregisterVoteCommand(NativeVotesOverride_Kick, OnKickVote);
+        g_bVoteKickRegistered = false;
     }
 }
 
