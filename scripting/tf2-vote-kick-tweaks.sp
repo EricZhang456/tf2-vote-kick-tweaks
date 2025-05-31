@@ -62,42 +62,42 @@ public Action VoteKickVisCheck(int client, NativeVotesOverride overrideType) {
 
 public Action OnKickVote(int client, NativeVotesOverride overrideType, const char[] voteArgument,
                          NativeVotesKickType kickType, int target) {
-    int initiatorIndex = GetClientOfUserId(client);
+    int targetIndex = GetClientOfUserId(target);
 
-    if (initiatorIndex == 0) {
+    if (client == 0) {
         return Plugin_Continue;
     }
 
-    if (!g_cvVoteKickSelf.BoolValue && client == target) {
-        NativeVotes_DisplayCallVoteFail(initiatorIndex, NativeVotesCallFail_WrongTeam);
+    if (!g_cvVoteKickSelf.BoolValue && client == targetIndex) {
+        NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_WrongTeam);
         return Plugin_Handled;
     }
 
-    AdminId initiatorAdminId = GetUserAdmin(initiatorIndex);
-    AdminId targetAdminId = GetUserAdmin(GetClientOfUserId(target));
+    AdminId initiatorAdminId = GetUserAdmin(client);
+    AdminId targetAdminId = GetUserAdmin(targetIndex);
 
     if (g_cvVoteKickTargetAdmin.BoolValue && !initiatorAdminId.CanTarget(targetAdminId)) {
-        NativeVotes_DisplayCallVoteFail(initiatorIndex, NativeVotesCallFail_CantKickAdmin);
+        NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_CantKickAdmin);
         return Plugin_Handled;
     }
 
     if (!g_cvVoteKickGenericAllowed.BoolValue && kickType == NativeVotesKickType_Generic) {
-        NativeVotes_DisplayCallVoteFail(initiatorIndex, NativeVotesCallFail_Disabled);
+        NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_Disabled);
         return Plugin_Handled;
     }
 
     if (!g_cvVoteKickIdleAllowed.BoolValue && kickType == NativeVotesKickType_Idle) {
-        NativeVotes_DisplayCallVoteFail(initiatorIndex, NativeVotesCallFail_Disabled);
+        NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_Disabled);
         return Plugin_Handled;
     }
 
     if (!g_cvVoteKickScammingAllowed.BoolValue && kickType == NativeVotesKickType_Scamming) {
-        NativeVotes_DisplayCallVoteFail(initiatorIndex, NativeVotesCallFail_Disabled);
+        NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_Disabled);
         return Plugin_Handled;
     }
 
     if (!g_cvVoteKickCheatingAllowed.BoolValue && kickType == NativeVotesKickType_Cheating) {
-        NativeVotes_DisplayCallVoteFail(initiatorIndex, NativeVotesCallFail_Disabled);
+        NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_Disabled);
         return Plugin_Handled;
     }
 
