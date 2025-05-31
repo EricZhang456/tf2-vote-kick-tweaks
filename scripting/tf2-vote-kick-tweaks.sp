@@ -63,6 +63,9 @@ public Action VoteKickVisCheck(int client, NativeVotesOverride overrideType) {
 public Action OnKickVote(int client, NativeVotesOverride overrideType, const char[] voteArgument,
                          NativeVotesKickType kickType, int target) {
     int targetIndex = GetClientOfUserId(target);
+    PrintToChatAll("%d", client);
+    PrintToChatAll("%d", target);
+    PrintToChatAll("%d", targetIndex);
 
     if (client == 0) {
         return Plugin_Continue;
@@ -76,7 +79,8 @@ public Action OnKickVote(int client, NativeVotesOverride overrideType, const cha
     AdminId initiatorAdminId = GetUserAdmin(client);
     AdminId targetAdminId = GetUserAdmin(targetIndex);
 
-    if (g_cvVoteKickTargetAdmin.BoolValue && !initiatorAdminId.CanTarget(targetAdminId)) {
+    if (g_cvVoteKickTargetAdmin.BoolValue && targetAdminId != INVALID_ADMIN_ID
+        && !initiatorAdminId.CanTarget(targetAdminId)) {
         NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_CantKickAdmin);
         return Plugin_Handled;
     }
