@@ -63,9 +63,6 @@ public Action VoteKickVisCheck(int client, NativeVotesOverride overrideType) {
 public Action OnKickVote(int client, NativeVotesOverride overrideType, const char[] voteArgument,
                          NativeVotesKickType kickType, int target) {
     int targetIndex = GetClientOfUserId(target);
-    PrintToChatAll("%d", client);
-    PrintToChatAll("%d", target);
-    PrintToChatAll("%d", targetIndex);
 
     if (client == 0) {
         return Plugin_Continue;
