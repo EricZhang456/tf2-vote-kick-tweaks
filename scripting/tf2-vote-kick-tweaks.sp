@@ -62,11 +62,11 @@ public Action VoteKickVisCheck(int client, NativeVotesOverride overrideType) {
 
 public Action OnKickVote(int client, NativeVotesOverride overrideType, const char[] voteArgument,
                          NativeVotesKickType kickType, int target) {
-    int targetIndex = GetClientOfUserId(target);
-
     if (client == 0) {
         return Plugin_Continue;
     }
+
+    int targetIndex = GetClientOfUserId(target);
 
     if (!g_cvVoteKickSelf.BoolValue && client == targetIndex) {
         NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_WrongTeam);
