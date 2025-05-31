@@ -28,47 +28,36 @@ public void OnPluginStart() {
     g_cvVoteKickCheatingAllowed = CreateConVar("sm_vote_kick_cheating_allowed", "1", "Allow vote kicks with cheating as the reason");
 
     g_cvServerVoteKickAllowed = FindConVar("sv_vote_issue_kick_allowed");
-    g_cvServerVoteKickAllowed.AddChangeHook(OnServerVoteKickAllowChange);
 
     AutoExecConfig(true);
 }
 
 public void OnLibraryAdded(const char[] name) {
-    if (g_cvServerVoteKickAllowed.BoolValue && StrEqual(name, "nativevotes", false)
-        && NativeVotes_IsVoteTypeSupported(NativeVotesType_Kick)) {
-        NativeVotes_RegisterVoteCommand(NativeVotesOverride_Kick, OnKickVote);
+    if (StrEqual(name, "nativevotes", false) && NativeVotes_IsVoteTypeSupported(NativeVotesType_Kick)) {
+        NativeVotes_RegisterVoteCommand(NativeVotesOverride_Kick, OnKickVote, VoteKickVisCheck);
         g_bVoteKickRegistered = true;
     }
 }
 
 public void OnLibraryRemoved(const char[] name) {
-    if (g_cvServerVoteKickAllowed.BoolValue && StrEqual(name, "nativevotes", false)
-        && NativeVotes_IsVoteTypeSupported(NativeVotesType_Kick)) {
-        NativeVotes_UnregisterVoteCommand(NativeVotesOverride_Kick, OnKickVote);
+    if (StrEqual(name, "nativevotes", false) && NativeVotes_IsVoteTypeSupported(NativeVotesType_Kick)) {
+        NativeVotes_UnregisterVoteCommand(NativeVotesOverride_Kick, OnKickVote, VoteKickVisCheck);
         g_bVoteKickRegistered = false;
     }
 }
 
 public void OnAllPluginsLoaded() {
-    if (g_cvServerVoteKickAllowed.BoolValue && !g_bVoteKickRegistered
-        && LibraryExists("nativevotes") && NativeVotes_IsVoteTypeSupported(NativeVotesType_Kick)) {
-        NativeVotes_RegisterVoteCommand(NativeVotesOverride_Kick, OnKickVote);
+    if (!g_bVoteKickRegistered && LibraryExists("nativevotes") && NativeVotes_IsVoteTypeSupported(NativeVotesType_Kick)) {
+        NativeVotes_RegisterVoteCommand(NativeVotesOverride_Kick, OnKickVote, VoteKickVisCheck);
         g_bVoteKickRegistered = true;
     }
 }
 
-public void OnServerVoteKickAllowChange(ConVar convar, const char[] oldValue, const char[] newValue) {
-    if (!LibraryExists("nativevotes") || !NativeVotes_IsVoteTypeSupported(NativeVotesType_Kick)) {
-        return;
+public Action VoteKickVisCheck(int client, NativeVotesOverride overrideType) {
+    if (g_cvServerVoteKickAllowed.BoolValue) {
+        return Plugin_Continue;
     }
-
-    if (convar.BoolValue && !g_bVoteKickRegistered) {
-        NativeVotes_RegisterVoteCommand(NativeVotesOverride_Kick, OnKickVote);
-        g_bVoteKickRegistered = true;
-    } else if (!convar.BoolValue && g_bVoteKickRegistered) {
-        NativeVotes_UnregisterVoteCommand(NativeVotesOverride_Kick, OnKickVote);
-        g_bVoteKickRegistered = false;
-    }
+    return Plugin_Handled;
 }
 
 public Action OnKickVote(int client, NativeVotesOverride overrideType, const char[] voteArgument,
