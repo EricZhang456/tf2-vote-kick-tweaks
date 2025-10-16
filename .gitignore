@@ -1,6 +1,5 @@
 scripting/compiled/
 plugins/
-scripting/include/
 scripting/spcomp*
 scripting/compile*
 .vscode/
